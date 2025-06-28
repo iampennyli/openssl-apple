@@ -35,11 +35,13 @@ For all options see:
 
 # Generate frameworks
 
-Generate dynamically linked frameworks and a compound XCFramework:
+Generate dynamically linked frameworks and a compound XCFramework with Privacy Manifest:
 
 ```
 ./create-openssl-framework.sh
 ```
+
+The generated frameworks automatically include Privacy Manifest files (`PrivacyInfo.xcprivacy`) as required by Apple for App Store submissions. For more details, see [PRIVACY_MANIFEST.md](PRIVACY_MANIFEST.md).
 
 # Original project
 

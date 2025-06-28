@@ -173,6 +173,16 @@ for SYS in ${ALL_SYSTEMS[@]}; do
         lipo -create ${DYLIBS[@]} -output $FWDIR/$FWNAME
         cp -r include/$FWNAME/* $FWDIR/Headers/
         cp -L assets/$SYS/Info.plist $FWDIR/Info.plist
+        
+        # Add Privacy Manifest to framework
+        PRIVACY_MANIFEST_PATH="app_privacy_manifest_fixer/Templates/UserTemplates/openssl.xcprivacy"
+        if [ -f "$PRIVACY_MANIFEST_PATH" ]; then
+            cp "$PRIVACY_MANIFEST_PATH" "$FWDIR/PrivacyInfo.xcprivacy"
+            echo "  Added Privacy Manifest to $FWDIR"
+        else
+            echo "  Warning: Privacy Manifest template not found at $PRIVACY_MANIFEST_PATH"
+        fi
+        
         MIN_SDK_VERSION=$(get_min_sdk "$FWDIR/$FWNAME")
         OPENSSL_VERSION=$(get_openssl_version_from_file "$FWDIR/Headers/opensslv.h")
         sed -e "s/\\\$(MIN_SDK_VERSION)/$MIN_SDK_VERSION/g" \
@@ -201,6 +211,11 @@ for SYS in ${ALL_SYSTEMS[@]}; do
         mkdir "Versions/A/Resources"
         mv "openssl" "Headers" "Versions/A"
         mv "Info.plist" "Versions/A/Resources"
+        
+        # Move Privacy Manifest to versioned Resources directory if it exists
+        if [ -f "PrivacyInfo.xcprivacy" ]; then
+            mv "PrivacyInfo.xcprivacy" "Versions/A/Resources/"
+        fi
 
         (cd "Versions" && ln -s "A" "Current")
         ln -s "Versions/Current/openssl"
